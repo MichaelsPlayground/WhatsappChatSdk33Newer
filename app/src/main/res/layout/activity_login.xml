@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context="de.androidcrypto.whatsappchat.activity.LoginActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -102,8 +102,35 @@
             </TextView>
 
             <TextView
-                android:id="@+id/login_using"
+                android:id="@+id/login_using_google"
                 android:layout_below="@id/need_new_account_link"
+                android:text="or Login Using your"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+            </TextView>
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/btnSignInGoogleSignIn"
+                android:layout_below="@id/login_using_google"
+                android:layout_centerHorizontal="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center_horizontal"
+                android:text="sign in with Google account" />
+
+            <TextView
+                android:id="@+id/login_using"
+                android:layout_below="@id/btnSignInGoogleSignIn"
                 android:text="or Login Using your"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
@@ -132,6 +159,13 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/phone"
                 android:gravity="center" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_below="@id/phone_login_button"
+                android:layout_height="2dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
         </RelativeLayout>
 
 

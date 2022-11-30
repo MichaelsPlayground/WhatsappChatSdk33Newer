@@ -5,7 +5,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId "com.example.chatapp"
+        applicationId "de.androidcrypto.whatsappchat"
         minSdkVersion 19
         targetSdkVersion 33
         versionCode 1
@@ -35,6 +35,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:23.1.0'
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
+    // auth with Google account
+    // Also add the dependency for the Google Play services library and specify its version
+    implementation 'com.google.android.gms:play-services-auth:20.4.0'
 
     implementation 'com.google.firebase:firebase-auth:21.1.0'
     implementation 'com.google.firebase:firebase-database:20.1.0'
@@ -48,3 +51,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'

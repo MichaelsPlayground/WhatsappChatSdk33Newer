@@ -9,22 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ImageViewActivity"></activity>
+        <activity android:name="de.androidcrypto.whatsappchat.activity.ImageViewActivity"></activity>
         <activity
-            android:name=".ChatActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".ProfileActivity" />
+            android:name="de.androidcrypto.whatsappchat.activity.ChatActivity"
+            android:parentActivityName="de.androidcrypto.whatsappchat.MainActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.activity.ProfileActivity" />
         <activity
-            android:name=".FindFriendsActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".PhoneLoginActivity" />
-        <activity android:name=".GroupChatActivity" />
+            android:name="de.androidcrypto.whatsappchat.activity.FindFriendsActivity"
+            android:parentActivityName="de.androidcrypto.whatsappchat.MainActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.activity.PhoneLoginActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.activity.GroupChatActivity" />
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity"
+            android:name="de.androidcrypto.whatsappchat.activity.SettingsActivity"
+            android:parentActivityName="de.androidcrypto.whatsappchat.MainActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.activity.RegisterActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.activity.LoginActivity" />
+        <activity android:name="de.androidcrypto.whatsappchat.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

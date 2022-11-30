@@ -1,2 +1,2 @@
-rootProject.name='ChatApp'
+rootProject.name='WhatsappChatSdk33'
 include ':app'
