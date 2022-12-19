@@ -43,9 +43,6 @@ public class FindFriendsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Find friends");
-
-
-
     }
 
     @Override
@@ -55,7 +52,6 @@ public class FindFriendsActivity extends AppCompatActivity {
         FirebaseRecyclerOptions<Contacts> options=new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(Userref,Contacts.class)
                 .build();
-
 
         FirebaseRecyclerAdapter<Contacts,FindFriendsViewHolder> adapter=
                 new FirebaseRecyclerAdapter<Contacts, FindFriendsViewHolder>(options) {

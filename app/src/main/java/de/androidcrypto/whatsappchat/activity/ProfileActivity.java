@@ -86,8 +86,6 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     private void ManageChatRequest() {
@@ -271,8 +269,6 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-
     }
 
     private void SendChatRequest() {
