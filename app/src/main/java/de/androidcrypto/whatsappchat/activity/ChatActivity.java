@@ -253,7 +253,7 @@ public class ChatActivity extends AppCompatActivity {
     private void loadMoreMessages() {
         DatabaseReference messageRef = RootRef.child("Messages").child(messageSenderId).child(messageRecieverId);
         //DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
+        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(TOTAL_ITEMS_TO_LOAD);
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
