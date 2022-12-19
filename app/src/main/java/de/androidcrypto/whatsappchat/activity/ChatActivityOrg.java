@@ -1,14 +1,5 @@
 package de.androidcrypto.whatsappchat.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -25,9 +15,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.chatapp.R;
-import de.androidcrypto.whatsappchat.adapter.MessageAdapter;
-import de.androidcrypto.whatsappchat.model.Messages;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,7 +35,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -56,9 +51,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.androidcrypto.whatsappchat.adapter.MessageAdapter;
+import de.androidcrypto.whatsappchat.model.Messages;
+
 // todo add infinite scroll on chat RecyclerView, see LapitChatAppOrg
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivityOrg extends AppCompatActivity {
     private String messageRecieverId, getMessageRecievername, messagereceiverimage, messageSenderId;
     private TextView username, userLastSeen;
     private CircularImageView userprofile;
@@ -72,26 +70,15 @@ public class ChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private RecyclerView userMessageRecyclerview;
 
-    private String saveCurrentTime, saveCurrentDate;
+    private String savecurrentTime, savecurrentDate;
     private String checker = "", myUrl = "";
     private StorageTask uploadTask;
     private Uri fileuri;
     private ProgressDialog loadingBar;
-
-    // this is new for pagination
-    private SwipeRefreshLayout mRefreshLayout;
-    private static final int TOTAL_ITEMS_TO_LOAD = 10;
-    private int mCurrentPage = 1;
-    //New Solution
-    private int itemPos = 0;
-    private String mLastKey = "";
-    private String mPrevKey = "";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_chat_org);
         loadingBar=new ProgressDialog(this);
         mAuth=FirebaseAuth.getInstance();
         messageSenderId=mAuth.getCurrentUser().getUid();
@@ -102,9 +89,6 @@ public class ChatActivity extends AppCompatActivity {
         messagereceiverimage=getIntent().getExtras().get("visit_image").toString();
 
         chattoolbar=findViewById(R.id.chat_toolbar);
-
-        // new for pagination
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe_layout);
 
         setSupportActionBar(chattoolbar);
         ActionBar actionBar=getSupportActionBar();
@@ -132,10 +116,10 @@ public class ChatActivity extends AppCompatActivity {
         Calendar calendar=Calendar.getInstance();
 
         SimpleDateFormat currentDate=new SimpleDateFormat("dd/MM/yyyy");
-        saveCurrentDate=currentDate.format(calendar.getTime());
+        savecurrentDate=currentDate.format(calendar.getTime());
 
         SimpleDateFormat currentTime=new SimpleDateFormat("hh:mm a");
-        saveCurrentTime=currentTime.format(calendar.getTime());
+        savecurrentTime=currentTime.format(calendar.getTime());
 
 
         username.setText(getMessageRecievername);
@@ -155,7 +139,7 @@ public class ChatActivity extends AppCompatActivity {
                         "Images","PDF Files","Ms Word Files"
                 };
 
-                AlertDialog.Builder builder=new AlertDialog.Builder(ChatActivity.this);
+                AlertDialog.Builder builder=new AlertDialog.Builder(ChatActivityOrg.this);
                 builder.setTitle("Select File");
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
@@ -192,7 +176,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        /* old
         RootRef.child("Messages").child(messageSenderId).child(messageRecieverId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -222,130 +205,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-         */
-
-        loadMessages(); // inital load
-
-        // new for pagination
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mCurrentPage++;
-                itemPos = 0;
-                loadMoreMessages();
-            }
-        });
     }
-
-    // new for pagination
-    /*
-    RootRef.child("Messages").child(messageSenderId).child(messageRecieverId).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Messages messages=dataSnapshot.getValue(Messages.class);
-                messagesList.add(messages);
-                messageAdapter.notifyDataSetChanged();
-                userMessageRecyclerview.smoothScrollToPosition(userMessageRecyclerview.getAdapter().getItemCount());
-            }
-     */
-
-    // scrolls up to the oldest message
-    private void loadMoreMessages() {
-        DatabaseReference messageRef = RootRef.child("Messages").child(messageSenderId).child(messageRecieverId);
-        //DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
-        messageQuery.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                Messages message = dataSnapshot.getValue(Messages.class);
-                String messageKey = dataSnapshot.getKey();
-
-                if(!mPrevKey.equals(messageKey)){
-                    messagesList.add(itemPos++, message);
-                } else {
-                    mPrevKey = mLastKey;
-                }
-
-                if(itemPos == 1) {
-                    mLastKey = messageKey;
-                }
-                Log.d("TOTALKEYS", "Last Key : " + mLastKey + " | Prev Key : " + mPrevKey + " | Message Key : " + messageKey);
-                messageAdapter.notifyDataSetChanged();
-                mRefreshLayout.setRefreshing(false);
-                linearLayoutManager.scrollToPositionWithOffset(0, 0); // to scroll to oldest available message
-                //linearLayoutManager.scrollToPositionWithOffset(10, 0);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    // scrolls down to the newest message
-    private void loadMessages() {
-        DatabaseReference messageRef = RootRef.child("Messages").child(messageSenderId).child(messageRecieverId);
-        //DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-        Query messageQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
-        messageQuery.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Messages message = dataSnapshot.getValue(Messages.class);
-                itemPos++;
-
-                if(itemPos == 1){
-                    String messageKey = dataSnapshot.getKey();
-                    mLastKey = messageKey;
-                    mPrevKey = messageKey;
-                }
-                messagesList.add(message);
-                messageAdapter.notifyDataSetChanged();
-                linearLayoutManager.scrollToPosition(messagesList.size() - 1);
-                mRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    /**
-     * existing methods
-     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -386,8 +246,8 @@ public class ChatActivity extends AppCompatActivity {
                                     messageDocsBody.put("from",messageSenderId);
                                     messageDocsBody.put("to", messageRecieverId);
                                     messageDocsBody.put("messageID", messagePushID);
-                                    messageDocsBody.put("time", saveCurrentTime);
-                                    messageDocsBody.put("date", saveCurrentDate);
+                                    messageDocsBody.put("time", savecurrentTime);
+                                    messageDocsBody.put("date", savecurrentDate);
 
 
                                     Map messageBodyDetail = new HashMap();
@@ -401,7 +261,7 @@ public class ChatActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     loadingBar.dismiss();
-                                    Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ChatActivityOrg.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -449,8 +309,8 @@ public class ChatActivity extends AppCompatActivity {
                             messageTextBody.put("from",messageSenderId);
                             messageTextBody.put("to",messageRecieverId);
                             messageTextBody.put("messageID",messagePushID);
-                            messageTextBody.put("time",saveCurrentTime);
-                            messageTextBody.put("date",saveCurrentDate);
+                            messageTextBody.put("time",savecurrentTime);
+                            messageTextBody.put("date",savecurrentDate);
 
                             Map messageBodyDetails =new HashMap();
                             messageBodyDetails.put(messageSenderRef+"/"+messagePushID,messageTextBody);
@@ -467,7 +327,7 @@ public class ChatActivity extends AppCompatActivity {
                                     else
                                     {
                                         loadingBar.dismiss();
-                                        Toast.makeText(ChatActivity.this,"Error:",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ChatActivityOrg.this,"Error:",Toast.LENGTH_SHORT).show();
                                     }
                                     messageInput.setText("");
                                 }
@@ -537,8 +397,8 @@ public class ChatActivity extends AppCompatActivity {
             messageTextBody.put("from",messageSenderId);
             messageTextBody.put("to",messageRecieverId);
             messageTextBody.put("messageID",messagePushID);
-            messageTextBody.put("time",saveCurrentTime);
-            messageTextBody.put("date",saveCurrentDate);
+            messageTextBody.put("time",savecurrentTime);
+            messageTextBody.put("date",savecurrentDate);
 
             Map messageBodyDetails =new HashMap();
             messageBodyDetails.put(messageSenderRef+"/"+messagePushID,messageTextBody);
@@ -553,7 +413,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(ChatActivity.this,"Error:",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatActivityOrg.this,"Error:",Toast.LENGTH_SHORT).show();
                     }
                     messageInput.setText("");
                 }
