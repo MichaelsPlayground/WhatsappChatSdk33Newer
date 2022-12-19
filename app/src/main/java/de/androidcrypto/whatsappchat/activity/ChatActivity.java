@@ -53,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// todo add infinite scroll on chat RecyclerView, see LapitChatAppOrg
+
 public class ChatActivity extends AppCompatActivity {
     private String messageRecieverId, getMessageRecievername, messagereceiverimage, messageSenderId;
     private TextView username, userlastseen;
@@ -66,7 +68,6 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
     private RecyclerView usermessagerecyclerview;
-
 
     private String savecurrentTime, savecurrentDate;
     private String checker = "", myUrl = "";
